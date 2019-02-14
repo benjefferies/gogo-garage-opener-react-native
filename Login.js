@@ -3,13 +3,28 @@ import axios from 'axios'
 import { View, Text, AsyncStorage, Button } from "react-native";
 import Auth0 from 'react-native-auth0';
 
-const auth0 = new Auth0({ domain: 'gogo-garage-opener.eu.auth0.com', clientId: 'v31OMS8iXKbzZPMXzs1Ltq0gIegv5nbT' });
 
 export default class Login extends React.Component {
 
-    _login( navigate) {
+    async getAuthSettings() {
+      let authDomain = await AsyncStorage.getItem('auth_domain') // gogo-garage-opener.eu.auth0.com
+      let authClient = await AsyncStorage.getItem('auth_client_id') // v31OMS8iXKbzZPMXzs1Ltq0gIegv5nbT
+      let authAudience = await AsyncStorage.getItem('auth_audience') // 'https://open.mygaragedoor.space/api'
+      if (!authDomain || !authClient || !authAudience) {
+        return {}
+      }
+      return {
+        authDomain,
+        authClient,
+        authAudience
+      }
+    }
+
+    async _login(navigate) {
+      auth = getAuthSettings()
+      const auth0 = new Auth0({ domain: auth.authDomain, clientId: auth.authClient });
       auth0.webAuth
-          .authorize({scope: 'openid profile email', audience: 'https://open.mygaragedoor.space/api'})
+          .authorize({scope: 'openid profile email', audience: auth.authAudience})
           .then(credentials => {
               AsyncStorage.setItem('accessToken', credentials.accessToken, () => {
                 axios.post(`${this.state.domain}/user/login`, {}, {headers: {'Authorization': `Bearer ${credentials.accessToken}`}})
@@ -25,7 +40,7 @@ export default class Login extends React.Component {
     }
 
     componentDidMount() {
-      this.props.navigation.addListener('willFocus', (playload)=>{
+      this.props.navigation.addListener('willFocus', ()=>{
         this.tryLogin()
       });
       this.tryLogin()
@@ -35,7 +50,7 @@ export default class Login extends React.Component {
       let {navigate} = this.props.navigation
       let domain = await AsyncStorage.getItem('domain')
       this.setState({domain})
-      if (!domain) {
+      if (!domain || Object.keys(getAuthSettings()).length === 0) {
         navigate('Settings')
       } else {
         AsyncStorage.getItem('accessToken', (err, accessToken) => {
@@ -63,7 +78,10 @@ export default class Login extends React.Component {
     render() {
       return (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <Text>Login</Text>
+        <Button
+          title="Login"
+          onPress={() => this.tryLogin()}
+        />
           <Button
             title="Settings"
             onPress={() => this.props.navigation.navigate("Settings")}
