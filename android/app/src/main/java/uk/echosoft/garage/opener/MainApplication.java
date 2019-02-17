@@ -1,4 +1,4 @@
-package com.gogogarageopenernative;
+package uk.echosoft.garage.opener;
 
 import android.app.Application;
 

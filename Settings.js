@@ -1,5 +1,4 @@
 import React from "react";
-import axios from 'axios'
 import { View, StyleSheet, Button, TextInput, AsyncStorage } from "react-native";
 
 const styles = StyleSheet.create({
@@ -7,7 +6,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     backgroundColor: '#ecf0f1'
-  },
+  }
 });
 
 
@@ -15,6 +14,7 @@ export default class Home extends React.Component {
 
   constructor() {
     super()
+    this.state = {domain: '', authDomain: '', authClientId: '', authAudience: '', autoclose: '60'}
   }
 
   static navigationOptions = ({ navigation }) => {
@@ -26,15 +26,31 @@ export default class Home extends React.Component {
 
   async componentDidMount() {
     let domain = await AsyncStorage.getItem('domain')
-    this.setState({ domain: domain ? domain : '' })
+    let authDomain = await AsyncStorage.getItem('auth_domain')
+    let authClientId = await AsyncStorage.getItem('auth_client_id')
+    let authAudience = await AsyncStorage.getItem('auth_audience')
+    let autoclose = await AsyncStorage.getItem('autoclose')
+
+    this.setState({ domain: domain, authDomain: authDomain, authClientId: authClientId, authAudience: authAudience, autoclose: autoclose})
   }
 
   async save(navigate) {
-    AsyncStorage.setItem('domain', this.state.domain)
-    AsyncStorage.setItem('domain', this.state.domain)
-    AsyncStorage.setItem('domain', this.state.domain)
-    AsyncStorage.setItem('domain', this.state.domain)
-    navigate('Login')
+    if (!this.state.domain || !this.state.authDomain || !this.state.authClientId || !this.state.authAudience || !this.state.autoclose) {
+      alert('All values must be set')
+      return
+    }
+    try {
+      await AsyncStorage.multiSet([
+        ['domain', this.state.domain],
+        ['auth_domain', this.state.authDomain],
+        ['auth_client_id', this.state.authClientId],
+        ['auth_audience', this.state.authAudience],
+        ['autoclose', this.state.autoclose]
+      ])
+    } catch (error) {
+      alert(`Failed to save settings: ${error}`)
+    }
+    navigate("Login")
   }
 
   render() {
@@ -49,21 +65,27 @@ export default class Home extends React.Component {
         />
         <TextInput
           style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-          onChangeText={(auth_server) => this.setState({ auth_server })}
+          onChangeText={(authDomain) => this.setState({ authDomain })}
           placeholder="Auth0 Domain"
-          value={this.state.auth_server}
+          value={this.state.authDomain}
         />
         <TextInput
           style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-          onChangeText={(auth_client_id) => this.setState({ auth_client_id })}
+          onChangeText={(authClientId) => this.setState({ authClientId })}
           placeholder="Auth0 Client ID"
-          value={this.state.auth_client_id}
+          value={this.state.authClientId}
         />
         <TextInput
           style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-          onChangeText={(auth_audience) => this.setState({ auth_audience })}
+          onChangeText={(authAudience) => this.setState({ authAudience })}
           placeholder="Auth0 API Audience"
-          value={this.state.auth_audience}
+          value={this.state.authAudience}
+        />
+        <TextInput
+          style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+          onChangeText={(autoclose) => this.setState({ autoclose })}
+          placeholder="Autoclose time"
+          value={this.state.autoclose}
         />
         <Button
           title="Save"
