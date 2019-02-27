@@ -13,12 +13,12 @@ export default class Login extends React.Component {
       let authAudience = await AsyncStorage.getItem('auth_audience') // 'https://open.mygaragedoor.space/api'
       const auth0 = new Auth0({ domain: authDomain, clientId: authClient });
       auth0.webAuth
-          .authorize({scope: 'openid profile email', audience: authAudience})
+          .authorize({scope: 'openid email', audience: authAudience})
           .then(credentials => {
               AsyncStorage.setItem('accessToken', credentials.accessToken, () => {
                 axios.post(`${this.state.domain}/user/login`, {}, {headers: {'Authorization': `Bearer ${credentials.accessToken}`}})
                 .then(function (response) {
-                  navigate('Home', {accessToken: credentials.accessToken})
+                  navigate('Home')
                 })
                 .catch((error) => alert(`Could not login to garage opener: ${error}`));
               })
@@ -52,7 +52,7 @@ export default class Login extends React.Component {
             if (current_time < exp) {
               axios.post(`${this.state.domain}/user/login`, {}, {headers: {'Authorization': `Bearer ${accessToken}`}})
               .then(function (response) {
-                navigate('Home', {accessToken: accessToken})
+                navigate('Home')
               })
               .catch((error) => {
                 alert(`Could not login ${error}`)

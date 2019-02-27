@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet, Button, TextInput, AsyncStorage } from "react-native";
+import { View, StyleSheet, Button, TextInput, AsyncStorage, CheckBox } from "react-native";
 
 const styles = StyleSheet.create({
   container: {
@@ -14,7 +14,7 @@ export default class Home extends React.Component {
 
   constructor() {
     super()
-    this.state = {domain: '', authDomain: '', authClientId: '', authAudience: '', autoclose: '60'}
+    this.state = {domain: '', authDomain: '', authClientId: '', authAudience: ''}
   }
 
   static navigationOptions = ({ navigation }) => {
@@ -29,13 +29,12 @@ export default class Home extends React.Component {
     let authDomain = await AsyncStorage.getItem('auth_domain')
     let authClientId = await AsyncStorage.getItem('auth_client_id')
     let authAudience = await AsyncStorage.getItem('auth_audience')
-    let autoclose = await AsyncStorage.getItem('autoclose')
 
-    this.setState({ domain: domain, authDomain: authDomain, authClientId: authClientId, authAudience: authAudience, autoclose: autoclose})
+    this.setState({ domain: domain, authDomain: authDomain, authClientId: authClientId, authAudience: authAudience})
   }
 
   async save(navigate) {
-    if (!this.state.domain || !this.state.authDomain || !this.state.authClientId || !this.state.authAudience || !this.state.autoclose) {
+    if (!this.state.domain || !this.state.authDomain || !this.state.authClientId || !this.state.authAudience) {
       alert('All values must be set')
       return
     }
@@ -44,8 +43,7 @@ export default class Home extends React.Component {
         ['domain', this.state.domain],
         ['auth_domain', this.state.authDomain],
         ['auth_client_id', this.state.authClientId],
-        ['auth_audience', this.state.authAudience],
-        ['autoclose', this.state.autoclose]
+        ['auth_audience', this.state.authAudience]
       ])
     } catch (error) {
       alert(`Failed to save settings: ${error}`)
@@ -80,12 +78,6 @@ export default class Home extends React.Component {
           onChangeText={(authAudience) => this.setState({ authAudience })}
           placeholder="Auth0 API Audience"
           value={this.state.authAudience}
-        />
-        <TextInput
-          style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-          onChangeText={(autoclose) => this.setState({ autoclose })}
-          placeholder="Autoclose time"
-          value={this.state.autoclose}
         />
         <Button
           title="Save"

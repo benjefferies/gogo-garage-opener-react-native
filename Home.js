@@ -1,6 +1,6 @@
 import React from "react";
 import axios from 'axios'
-import { View, StyleSheet, Button, AsyncStorage, ScrollView, RefreshControl, Clipboard } from "react-native";
+import { View, StyleSheet, Button, AsyncStorage, ScrollView, RefreshControl, Clipboard, Alert } from "react-native";
 
 const styles = StyleSheet.create({
   container: {
@@ -30,15 +30,19 @@ export default class Home extends React.Component {
 
   async componentDidMount() {
     const { navigation } = this.props;
-    const accessToken = navigation.getParam('accessToken');
+    let accessToken = await AsyncStorage.getItem('accessToken')
+    if (!accessToken) {
+      navigation.navigate("Login")
+      return
+    }
     let domain = await AsyncStorage.getItem('domain')
     axios.get(`${domain}/garage/state`, { headers: { 'Authorization': `Bearer ${accessToken}` } })
       .then((response) => this.setState({ doorState: response.data['Description'] }))
-      .catch((error) => alert(`Failed to get garage state: ${error}`));
   }
 
-  async toggle(accessToken) {
+  async toggle() {
     let domain = await AsyncStorage.getItem('domain')
+    let accessToken = await AsyncStorage.getItem('accessToken')
     axios.post(`${domain}/garage/toggle`, {}, { headers: { 'Authorization': `Bearer ${accessToken}` } })
       .then((response) => {
         for (let c = 0; c < 10; c++) {
@@ -46,7 +50,7 @@ export default class Home extends React.Component {
             axios.get(`${domain}/garage/state`, { headers: { 'Authorization': `Bearer ${accessToken}` } })
               .then((response) => {
                 this.setState({ doorState: response.data['Description'], refreshing: false })
-              }).catch(() => {
+              }).catch((error) => {
                 alert(`Failed to get garage state: ${error}`)
                 this.setState({ refreshing: false });
               });
@@ -56,12 +60,12 @@ export default class Home extends React.Component {
       .catch((error) => alert(`Failed to toggle: ${error}`));
   }
 
-  async autoclose(accessToken) {
+  async autoclose() {
     let domain = await AsyncStorage.getItem('domain')
-    let autoclose = await AsyncStorage.getItem('autoclose')
+    let accessToken = await AsyncStorage.getItem('accessToken')
     axios.post(`${domain}/garage/toggle`, {}, {
       params: {
-        autoclose: autoclose
+        autoclose: true
       }, headers: { 'Authorization': `Bearer ${accessToken}` }
     }).then((response) => {
       for (let c = 0; c < 10; c++) {
@@ -69,7 +73,7 @@ export default class Home extends React.Component {
           axios.get(`${domain}/garage/state`, { headers: { 'Authorization': `Bearer ${accessToken}` } })
             .then((response) => {
               this.setState({ doorState: response.data['Description'], refreshing: false })
-            }).catch(() => {
+            }).catch((error) => {
               alert(`Failed to get garage state: ${error}`)
               this.setState({ refreshing: false });
             });
@@ -79,13 +83,14 @@ export default class Home extends React.Component {
       .catch((error) => alert(`Failed to toggle: ${error}`));
   }
 
-  async oneTimePin(accessToken) {
+  async oneTimePin() {
     let domain = await AsyncStorage.getItem('domain')
+    let accessToken = await AsyncStorage.getItem('accessToken')
     axios.post(`${domain}/user/one-time-pin`, {}, { headers: { 'Authorization': `Bearer ${accessToken}` } })
       .then(function (response) {
-        alert('One time pin', 'One time pin generated tests',
+        Alert.alert('One time pin', 'One time pin generated',
           [
-            { text: 'Copy', onPress: () => Clipboard.setString(response.data["pin"]) }
+            { text: 'Copy', onPress: () => Clipboard.setString(`${domain}/user/one-time-pin/${response.data["pin"]}`) }
           ],
           { cancelable: false }
         )
@@ -95,12 +100,12 @@ export default class Home extends React.Component {
 
   async _onRefresh(navigation) {
     this.setState({ refreshing: true });
-    const accessToken = navigation.getParam('accessToken');
+    let accessToken = await AsyncStorage.getItem('accessToken')
     let domain = await AsyncStorage.getItem('domain')
     axios.get(`${domain}/garage/state`, { headers: { 'Authorization': `Bearer ${accessToken}` } })
       .then((response) => {
         this.setState({ doorState: response.data['Description'], refreshing: false })
-      }).catch(() => {
+      }).catch((error) => {
         alert(`Failed to get garage state: ${error}`)
         this.setState({ refreshing: false });
       });
@@ -108,7 +113,6 @@ export default class Home extends React.Component {
 
   render() {
     const { navigation } = this.props;
-    const accessToken = navigation.getParam('accessToken');
     return (
       <ScrollView
         contentContainerStyle={{ paddingBottom: 10 }}
@@ -121,19 +125,23 @@ export default class Home extends React.Component {
         <View style={styles.container} >
           <Button style={styles.button}
             title={this.state.doorState}
-            onPress={() => this.toggle(accessToken)}
+            onPress={this.toggle}
+            type="outline"
           />
           <Button style={styles.button}
             title="Auto close"
-            onPress={() => this.autoclose(accessToken)}
+            onPress={this.autoclose}
+            type="outline"
           />
           <Button style={styles.button}
             title="One time pin"
-            onPress={() => this.oneTimePin(accessToken)}
+            onPress={this.oneTimePin}
+            type="outline"
           />
           <Button style={styles.button}
             title="Settings"
             onPress={() => navigation.navigate("Settings")}
+            type="outline"
           />
         </View>
       </ScrollView>
