@@ -101,7 +101,7 @@ android {
         applicationId "uk.echosoft.garage.opener"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 14
+        versionCode 17
         versionName "2.0.0"
     }
     signingConfigs {

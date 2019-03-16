@@ -27,7 +27,7 @@
           <category android:name="android.intent.category.DEFAULT" />
           <category android:name="android.intent.category.BROWSABLE" />
           <data
-              android:host="gogo-garage-opener.eu.auth0.com"
+              android:host="*.auth0.com"
               android:pathPrefix="/android/uk.echosoft.garage.opener/callback"
               android:scheme="uk.echosoft.garage.opener" />
       </intent-filter>

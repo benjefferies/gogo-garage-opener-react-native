@@ -87,7 +87,7 @@ export default class Home extends React.Component {
     let domain = await AsyncStorage.getItem('domain')
     let accessToken = await AsyncStorage.getItem('accessToken')
     axios.post(`${domain}/user/one-time-pin`, {}, { headers: { 'Authorization': `Bearer ${accessToken}` } })
-      .then(function (response) {
+      .then((response) => {
         Alert.alert('One time pin', 'One time pin generated',
           [
             { text: 'Copy', onPress: () => Clipboard.setString(`${domain}/user/one-time-pin/${response.data["pin"]}`) }
@@ -125,17 +125,17 @@ export default class Home extends React.Component {
         <View style={styles.container} >
           <Button style={styles.button}
             title={this.state.doorState}
-            onPress={this.toggle}
+            onPress={() => this.toggle()}
             type="outline"
           />
           <Button style={styles.button}
             title="Auto close"
-            onPress={this.autoclose}
+            onPress={() => this.autoclose()}
             type="outline"
           />
           <Button style={styles.button}
             title="One time pin"
-            onPress={this.oneTimePin}
+            onPress={() => this.oneTimePin()}
             type="outline"
           />
           <Button style={styles.button}
