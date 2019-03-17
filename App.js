@@ -1,5 +1,5 @@
 import React from "react";
-import {BackHandler} from "react-native"
+import { BackHandler } from "react-native"
 import { createStackNavigator, createAppContainer } from "react-navigation";
 import Home from "./Home";
 import Login from "./Login";
@@ -19,12 +19,14 @@ const AppNavigator = createStackNavigator(
 );
 
 axios.interceptors.response.use(response => {
+  console.log("I did intercept");
   return response;
 }, error => {
- if (error.response.status === 401) {
-  NavigationService.navigate("Login");
- }
- return error;
+  if (error.response && error.response.status === 401) {
+    NavigationService.navigate("Login");
+  } else {
+    return Promise.reject(error);
+  }
 });
 
 const prevGetStateForAction = AppNavigator.router.getStateForAction;
@@ -48,6 +50,6 @@ const AppContainer = createAppContainer(AppNavigator);
 
 export default class App extends React.Component {
   render() {
-    return <AppContainer ref={navigatorRef => { NavigationService.setTopLevelNavigator(navigatorRef); } } />;
+    return <AppContainer ref={navigatorRef => { NavigationService.setTopLevelNavigator(navigatorRef); }} />;
   }
 }

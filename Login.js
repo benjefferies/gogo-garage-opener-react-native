@@ -30,7 +30,6 @@ export default class Login extends React.Component {
       this.props.navigation.addListener('willFocus', ()=>{
         this.tryLogin()
       });
-      this.tryLogin()
     }
 
     async tryLogin() {

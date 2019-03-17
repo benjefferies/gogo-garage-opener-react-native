@@ -1,6 +1,9 @@
 import React from "react";
 import axios from 'axios'
-import { View, StyleSheet, Button, AsyncStorage, ScrollView, RefreshControl, Clipboard, Alert } from "react-native";
+import { View, StyleSheet, Button, ScrollView, RefreshControl, Clipboard, Alert } from "react-native";
+import { getAllSettings, isSettingsConfigured } from "./StorageService"
+import { isLoggedIn, logout } from "./LoginService"
+import { getState, toggle, oneTimePin } from "./GarageService"
 
 const styles = StyleSheet.create({
   container: {
@@ -21,94 +24,66 @@ export default class Home extends React.Component {
     }
   }
 
-  static navigationOptions = ({ navigation }) => {
+  static navigationOptions = ({ _ }) => {
     return {
       headerTitle: "Garage Opener",
       headerLeft: null
     };
   }
 
+  getOptions(accessToken) {
+    return { headers: { 'Authorization': `Bearer ${accessToken}` } }
+  }
+
   async componentDidMount() {
     const { navigation } = this.props;
-    let accessToken = await AsyncStorage.getItem('accessToken')
-    if (!accessToken) {
+    if (await !isSettingsConfigured()) {
+      navigation.navigate("Settings")
+      return
+    }
+    if (!await isLoggedIn()) {
       navigation.navigate("Login")
       return
     }
-    let domain = await AsyncStorage.getItem('domain')
-    axios.get(`${domain}/garage/state`, { headers: { 'Authorization': `Bearer ${accessToken}` } })
-      .then((response) => this.setState({ doorState: response.data['Description'] }))
+    const status = await getState()
+    this.setState({ doorState: status })
   }
 
-  async toggle() {
-    let domain = await AsyncStorage.getItem('domain')
-    let accessToken = await AsyncStorage.getItem('accessToken')
-    axios.post(`${domain}/garage/toggle`, {}, { headers: { 'Authorization': `Bearer ${accessToken}` } })
-      .then((response) => {
-        for (let c = 0; c < 10; c++) {
-          setTimeout(() => {
-            axios.get(`${domain}/garage/state`, { headers: { 'Authorization': `Bearer ${accessToken}` } })
-              .then((response) => {
-                this.setState({ doorState: response.data['Description'], refreshing: false })
-              }).catch((error) => {
-                alert(`Failed to get garage state: ${error}`)
-                this.setState({ refreshing: false });
-              });
-          }, c * 5000)
-        }
-      })
-      .catch((error) => alert(`Failed to toggle: ${error}`));
+  async togglePressed() {
+    await toggle()
+    for (let c = 0; c < 10; c++) {
+      setTimeout(async () => this.setState({ doorState: await getState() }), c * 5000)
+    }
   }
 
-  async autoclose() {
-    let domain = await AsyncStorage.getItem('domain')
-    let accessToken = await AsyncStorage.getItem('accessToken')
-    axios.post(`${domain}/garage/toggle`, {}, {
-      params: {
-        autoclose: true
-      }, headers: { 'Authorization': `Bearer ${accessToken}` }
-    }).then((response) => {
-      for (let c = 0; c < 10; c++) {
-        setTimeout(() => {
-          axios.get(`${domain}/garage/state`, { headers: { 'Authorization': `Bearer ${accessToken}` } })
-            .then((response) => {
-              this.setState({ doorState: response.data['Description'], refreshing: false })
-            }).catch((error) => {
-              alert(`Failed to get garage state: ${error}`)
-              this.setState({ refreshing: false });
-            });
-        }, c * 5000)
-      }
-    })
-      .catch((error) => alert(`Failed to toggle: ${error}`));
+  async autoclosePressed() {
+    await toggle(true)
+    for (let c = 0; c < 10; c++) {
+      setTimeout(async () => this.setState({ doorState: await getState() }), c * 5000)
+    }
   }
 
-  async oneTimePin() {
-    let domain = await AsyncStorage.getItem('domain')
-    let accessToken = await AsyncStorage.getItem('accessToken')
-    axios.post(`${domain}/user/one-time-pin`, {}, { headers: { 'Authorization': `Bearer ${accessToken}` } })
-      .then((response) => {
-        Alert.alert('One time pin', 'One time pin generated',
-          [
-            { text: 'Copy', onPress: () => Clipboard.setString(`${domain}/user/one-time-pin/${response.data["pin"]}`) }
-          ],
-          { cancelable: false }
-        )
-      })
-      .catch((error) => alert(`Failed to generate one time pin: ${error}`));
+  async oneTimePinPressed() {
+    const pin = await oneTimePin()
+    Alert.alert('One time pin', pin,
+      [
+        { text: 'Copy', onPress: () => Clipboard.setString(pin) }
+      ],
+      { cancelable: false }
+    )
   }
 
-  async _onRefresh(navigation) {
+  async logoutPressed() {
+    logout()
+  }
+
+  async _onRefresh(_) {
     this.setState({ refreshing: true });
-    let accessToken = await AsyncStorage.getItem('accessToken')
-    let domain = await AsyncStorage.getItem('domain')
-    axios.get(`${domain}/garage/state`, { headers: { 'Authorization': `Bearer ${accessToken}` } })
-      .then((response) => {
-        this.setState({ doorState: response.data['Description'], refreshing: false })
-      }).catch((error) => {
-        alert(`Failed to get garage state: ${error}`)
-        this.setState({ refreshing: false });
-      });
+    try {
+      this.setState({ doorState: await getState(), refreshing: false })
+    } catch (error) {
+      this.setState({ refreshing: false });
+    }
   }
 
   render() {
@@ -123,24 +98,29 @@ export default class Home extends React.Component {
           />
         }>
         <View style={styles.container} >
-          <Button style={styles.button}
+          <Button
             title={this.state.doorState}
-            onPress={() => this.toggle()}
+            onPress={() => this.togglePressed()}
             type="outline"
           />
-          <Button style={styles.button}
+          <Button
             title="Auto close"
-            onPress={() => this.autoclose()}
+            onPress={() => this.autoclosePressed()}
             type="outline"
           />
-          <Button style={styles.button}
+          <Button
             title="One time pin"
-            onPress={() => this.oneTimePin()}
+            onPress={() => this.oneTimePinPressed()}
             type="outline"
           />
-          <Button style={styles.button}
+          <Button
             title="Settings"
             onPress={() => navigation.navigate("Settings")}
+            type="outline"
+          />
+          <Button
+            title="Logout"
+            onPress={() => this.logoutPressed()}
             type="outline"
           />
         </View>
