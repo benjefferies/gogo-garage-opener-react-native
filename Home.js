@@ -37,7 +37,7 @@ export default class Home extends React.Component {
 
   async componentDidMount() {
     const { navigation } = this.props;
-    if (await !isSettingsConfigured()) {
+    if (!await isSettingsConfigured()) {
       navigation.navigate("Settings")
       return
     }
@@ -45,6 +45,11 @@ export default class Home extends React.Component {
       navigation.navigate("Login")
       return
     }
+    // For when redirected back from login page  
+    navigation.addListener('willFocus', async () => {
+      const status = await getState()
+      this.setState({ doorState: status })
+    });
     const status = await getState()
     this.setState({ doorState: status })
   }

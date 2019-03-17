@@ -40,3 +40,12 @@ export async function oneTimePin() {
     });
   return `${api.rsDomain}/user/one-time-pin/${response.data["pin"]}`
 }
+
+export async function loginResourceServer() {
+  const api = await getApi()
+  return axios.post(`${api.rsDomain}/user/login`, {}, getOptions(api.accessToken))
+    .catch((error) => {
+      alert(`Could not login to garage opener: ${error}`)
+      throw error
+    });
+}

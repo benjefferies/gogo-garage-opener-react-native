@@ -1,4 +1,5 @@
-import { getAllSettings, getApi, removeAccessToken } from "./StorageService"
+import { getAllSettings, getApi, removeAccessToken, saveAccessToken } from "./StorageService"
+import { loginResourceServer } from "./GarageService"
 import Auth0 from 'react-native-auth0';
 
 export async function isLoggedIn() {
@@ -9,10 +10,9 @@ export async function isLoggedIn() {
     await auth0
       .auth
       .userInfo({ token: api.accessToken })
-      .then(r => console.log("Got user info assuming logged in"))
+      .then(_ => console.log("Got user info assuming logged in"))
   } catch (error) {
-    console.log(`Got error getting user info assuming not logged in error=${error}`)
-    return false;
+    return false
   }
   return true
 }
@@ -25,8 +25,22 @@ export async function logout() {
     await auth0
       .webAuth
       .clearSession()
-      .then(r => console.log("Cleared user session"))
+      .then(_ => console.log("Cleared user session"))
   } catch (error) {
     console.log(`Failed to clear user session=${error}`)
+  }
+}
+
+export async function login() {
+  const settings = await getAllSettings()
+  const auth0 = new Auth0({ domain: settings.asDomain, clientId: settings.clientId });
+  try {
+    const credentials = await auth0.webAuth
+      .authorize({ scope: 'openid email', audience: `${settings.rsDomain}/api` })
+    await saveAccessToken(credentials.accessToken)
+    await loginResourceServer()
+  } catch (error) {
+    alert(`Failed to login auth0: ${error}`)
+    throw error
   }
 }

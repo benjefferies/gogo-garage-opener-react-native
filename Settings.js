@@ -1,5 +1,6 @@
 import React from "react";
-import { View, StyleSheet, Button, TextInput, AsyncStorage, CheckBox } from "react-native";
+import { View, StyleSheet, Button, TextInput, AsyncStorage, CheckBox, NavigationActions } from "react-native";
+import { setSettings, getAllSettings } from "./StorageService";
 
 const styles = StyleSheet.create({
   container: {
@@ -10,14 +11,14 @@ const styles = StyleSheet.create({
 });
 
 
-export default class Home extends React.Component {
+export default class Settings extends React.Component {
 
   constructor() {
     super()
-    this.state = {domain: '', authDomain: '', authClientId: '', authAudience: ''}
+    this.state = {domain: '', authDomain: '', authClientId: ''}
   }
 
-  static navigationOptions = ({ navigation }) => {
+  static navigationOptions = ({ _ }) => {
     return {
       headerTitle: "Settings",
       headerLeft: null
@@ -25,34 +26,24 @@ export default class Home extends React.Component {
   }
 
   async componentDidMount() {
-    let domain = await AsyncStorage.getItem('domain')
-    let authDomain = await AsyncStorage.getItem('auth_domain')
-    let authClientId = await AsyncStorage.getItem('auth_client_id')
-    let authAudience = await AsyncStorage.getItem('auth_audience')
-
-    this.setState({ domain: domain, authDomain: authDomain, authClientId: authClientId, authAudience: authAudience})
+    const settings = await getAllSettings()
+    this.setState({ domain: settings.rsDomain, authDomain: settings.asDomain, authClientId: settings.clientId})
   }
 
-  async save(navigate) {
-    if (!this.state.domain || !this.state.authDomain || !this.state.authClientId || !this.state.authAudience) {
+  async save() {
+    if (!this.state.domain || !this.state.authDomain || !this.state.authClientId) {
       alert('All values must be set')
       return
     }
     try {
-      await AsyncStorage.multiSet([
-        ['domain', this.state.domain],
-        ['auth_domain', this.state.authDomain],
-        ['auth_client_id', this.state.authClientId],
-        ['auth_audience', this.state.authAudience]
-      ])
+      await setSettings(this.state.domain, this.state.authDomain, this.state.authClientId)
+      this.props.navigation.goBack()
     } catch (error) {
       alert(`Failed to save settings: ${error}`)
     }
-    navigate("Login")
   }
 
   render() {
-    let { navigate } = this.props.navigation
     return (
       <View style={styles.container}>
         <TextInput
@@ -73,15 +64,9 @@ export default class Home extends React.Component {
           placeholder="Auth0 Client ID"
           value={this.state.authClientId}
         />
-        <TextInput
-          style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-          onChangeText={(authAudience) => this.setState({ authAudience })}
-          placeholder="Auth0 API Audience"
-          value={this.state.authAudience}
-        />
         <Button
           title="Save"
-          onPress={() => this.save(navigate)}
+          onPress={() => this.save()}
         />
       </View>
     );
