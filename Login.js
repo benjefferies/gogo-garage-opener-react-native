@@ -1,14 +1,10 @@
 import React from "react";
-import axios from 'axios'
-import { View, Text, AsyncStorage, Button } from "react-native";
-import { decode as atob } from 'base-64'
-import Auth0 from 'react-native-auth0';
-import { login, isLoggedIn } from "./LoginService"
-import { getAllSettings, isSettingsConfigured, getApi } from "./StorageService";
-
+import { Button, View } from "react-native";
+import { isLoggedIn, login } from "./LoginService";
+import { isSettingsConfigured } from "./StorageService";
+import styles from './Style'
 
 export default class Login extends React.Component {
-
 
   componentDidMount() {
     this.props.navigation.addListener('willFocus', () => {
@@ -31,12 +27,12 @@ export default class Login extends React.Component {
   render() {
     let { navigate } = this.props.navigation
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Button
+      <View style={styles.container}>
+        <Button style={styles.button}
           title="Login"
           onPress={() => this.tryLogin()}
         />
-        <Button
+        <Button style={styles.button}
           title="Settings"
           onPress={() => navigate("Settings")}
         />

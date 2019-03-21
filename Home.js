@@ -1,18 +1,16 @@
 import React from "react";
-import axios from 'axios'
-import { View, StyleSheet, Button, ScrollView, RefreshControl, Clipboard, Alert } from "react-native";
-import { getAllSettings, isSettingsConfigured } from "./StorageService"
+import { ScrollView, RefreshControl, Clipboard, Alert } from "react-native";
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Button } from 'react-native-elements';
+import { isSettingsConfigured } from "./StorageService"
 import { isLoggedIn, logout } from "./LoginService"
 import { getState, toggle, oneTimePin } from "./GarageService"
+import styles from './Style'
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    backgroundColor: '#ecf0f1'
-  }
-});
-
+const myButton = (
+  <Button buttonStyle={{ marginVertical: 1 }} >
+  </Button>
+);
 
 export default class Home extends React.Component {
 
@@ -95,40 +93,68 @@ export default class Home extends React.Component {
     const { navigation } = this.props;
     return (
       <ScrollView
-        contentContainerStyle={{ paddingBottom: 10 }}
         refreshControl={
           <RefreshControl
             refreshing={this.state.refreshing}
             onRefresh={() => this._onRefresh(navigation)}
           />
         }>
-        <View style={styles.container} >
-          <Button
-            title={this.state.doorState}
-            onPress={() => this.togglePressed()}
-            type="outline"
-          />
-          <Button
-            title="Auto close"
-            onPress={() => this.autoclosePressed()}
-            type="outline"
-          />
-          <Button
-            title="One time pin"
-            onPress={() => this.oneTimePinPressed()}
-            type="outline"
-          />
-          <Button
-            title="Settings"
-            onPress={() => navigation.navigate("Settings")}
-            type="outline"
-          />
-          <Button
-            title="Logout"
-            onPress={() => this.logoutPressed()}
-            type="outline"
-          />
-        </View>
+        <Button buttonStyle={{ marginVertical: 1 }}
+          icon={
+            <Icon
+              name="garage"
+              size={40}
+              color="white"
+            />
+          }
+          title={this.state.doorState}
+          onPress={() => this.togglePressed()}
+        />
+        <Button buttonStyle={{ marginVertical: 1 }}
+          icon={
+            <Icon
+              name="garage-open"
+              size={40}
+              color="white"
+            />
+          }
+          title="Auto close"
+          onPress={() => this.autoclosePressed()}
+        />
+        <Button buttonStyle={{ marginVertical: 1 }}
+          icon={
+            <Icon
+              name="pin"
+              size={40}
+              color="white"
+            />
+          }
+          title="One time pin"
+          onPress={() => this.oneTimePinPressed()}
+        />
+        <Button buttonStyle={{ marginVertical: 1 }}
+          icon={
+            <Icon
+              name="settings"
+              size={40}
+              color="white"
+            />
+          }
+          title="Settings"
+          onPress={() => navigation.navigate("Settings")}
+        />
+        <Button buttonStyle={{ marginVertical: 1 }}
+        iconRight="true"
+          icon={
+            <Icon
+              name="logout"
+              size={40}
+              color="white"
+            />
+          }
+          title="Logout"
+          onPress={() => this.logoutPressed()}
+        />
       </ScrollView>
     );
   }

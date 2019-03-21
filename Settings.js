@@ -1,15 +1,7 @@
 import React from "react";
-import { View, StyleSheet, Button, TextInput, AsyncStorage, CheckBox, NavigationActions } from "react-native";
-import { setSettings, getAllSettings } from "./StorageService";
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    backgroundColor: '#ecf0f1'
-  }
-});
-
+import { Button, TextInput, View } from "react-native";
+import { getAllSettings, setSettings } from "./StorageService";
+import styles from './Style';
 
 export default class Settings extends React.Component {
 
@@ -64,7 +56,7 @@ export default class Settings extends React.Component {
           placeholder="Auth0 Client ID"
           value={this.state.authClientId}
         />
-        <Button
+        <Button style={styles.button}
           title="Save"
           onPress={() => this.save()}
         />

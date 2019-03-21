@@ -1,5 +1,5 @@
-import { getApi } from "./StorageService"
-import axios from 'axios'
+import axios from 'axios';
+import { getApi } from "./StorageService";
 
 function getOptions(accessToken) {
   return { headers: { 'Authorization': `Bearer ${accessToken}` } }
