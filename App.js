@@ -1,33 +1,32 @@
 import React from "react";
 import { BackHandler } from "react-native"
-import { createStackNavigator, createAppContainer } from "react-navigation";
+import { createBottomTabNavigator, createAppContainer } from "react-navigation";
 import Home from "./Home";
-import Login from "./Login";
 import Settings from "./Settings";
 import axios from "axios";
 import NavigationService from "./NavigationService";
-
-const AppNavigator = createStackNavigator(
-  {
-    Login: Login,
-    Home: Home,
-    Settings: Settings
-  },
-  {
-    initialRouteName: "Home"
-  }
-);
+import { login } from "./LoginService"
+import Pin from "./Pin";
 
 axios.interceptors.response.use(response => {
-  console.log("I did intercept");
   return response;
-}, error => {
+}, async error => {
   if (error.response && error.response.status === 401) {
-    NavigationService.navigate("Login");
+    await login()
   } else {
     return Promise.reject(error);
   }
 });
+
+const AppNavigator = createBottomTabNavigator(
+  {
+    Pin: Pin,
+    Home: Home,
+    Settings: Settings,
+  },{
+    initialRouteName: 'Home',
+  }
+);
 
 const prevGetStateForAction = AppNavigator.router.getStateForAction;
 

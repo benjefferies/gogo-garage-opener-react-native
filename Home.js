@@ -1,11 +1,11 @@
 import React from "react";
-import { ScrollView, RefreshControl, Clipboard, Alert } from "react-native";
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Alert, Clipboard, RefreshControl, ScrollView } from "react-native";
 import { Button } from 'react-native-elements';
-import { isSettingsConfigured } from "./StorageService"
-import { isLoggedIn, logout } from "./LoginService"
-import { getState, toggle, oneTimePin } from "./GarageService"
-import styles from './Style'
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { getState, oneTimePin, toggle } from "./GarageService";
+import { isLoggedIn, login } from "./LoginService";
+import { isSettingsConfigured } from "./StorageService";
+
 
 const myButton = (
   <Button buttonStyle={{ marginVertical: 1 }} >
@@ -24,13 +24,12 @@ export default class Home extends React.Component {
 
   static navigationOptions = ({ _ }) => {
     return {
-      headerTitle: "Garage Opener",
-      headerLeft: null
+      tabBarIcon: (<Icon
+              name="garage"
+              size={45}
+              color="black"
+            />)
     };
-  }
-
-  getOptions(accessToken) {
-    return { headers: { 'Authorization': `Bearer ${accessToken}` } }
   }
 
   async componentDidMount() {
@@ -40,7 +39,7 @@ export default class Home extends React.Component {
       return
     }
     if (!await isLoggedIn()) {
-      navigation.navigate("Login")
+      await login()
       return
     }
     // For when redirected back from login page  
@@ -64,20 +63,6 @@ export default class Home extends React.Component {
     for (let c = 0; c < 10; c++) {
       setTimeout(async () => this.setState({ doorState: await getState() }), c * 5000)
     }
-  }
-
-  async oneTimePinPressed() {
-    const pin = await oneTimePin()
-    Alert.alert('One time pin', pin,
-      [
-        { text: 'Copy', onPress: () => Clipboard.setString(pin) }
-      ],
-      { cancelable: false }
-    )
-  }
-
-  async logoutPressed() {
-    logout()
   }
 
   async _onRefresh(_) {
@@ -120,40 +105,6 @@ export default class Home extends React.Component {
           }
           title="Auto close"
           onPress={() => this.autoclosePressed()}
-        />
-        <Button buttonStyle={{ marginVertical: 1 }}
-          icon={
-            <Icon
-              name="pin"
-              size={40}
-              color="white"
-            />
-          }
-          title="One time pin"
-          onPress={() => this.oneTimePinPressed()}
-        />
-        <Button buttonStyle={{ marginVertical: 1 }}
-          icon={
-            <Icon
-              name="settings"
-              size={40}
-              color="white"
-            />
-          }
-          title="Settings"
-          onPress={() => navigation.navigate("Settings")}
-        />
-        <Button buttonStyle={{ marginVertical: 1 }}
-        iconRight="true"
-          icon={
-            <Icon
-              name="logout"
-              size={40}
-              color="white"
-            />
-          }
-          title="Logout"
-          onPress={() => this.logoutPressed()}
         />
       </ScrollView>
     );

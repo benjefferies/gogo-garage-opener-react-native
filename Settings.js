@@ -1,7 +1,10 @@
 import React from "react";
-import { Button, TextInput, View } from "react-native";
+import { TextInput, View, Text } from "react-native";
 import { getAllSettings, setSettings } from "./StorageService";
+import { Button } from 'react-native-elements';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import styles from './Style';
+import { logout } from "./LoginService";
 
 export default class Settings extends React.Component {
 
@@ -12,8 +15,11 @@ export default class Settings extends React.Component {
 
   static navigationOptions = ({ _ }) => {
     return {
-      headerTitle: "Settings",
-      headerLeft: null
+      tabBarIcon: (<Icon
+              name="settings"
+              size={25}
+              color="black"
+            />)
     };
   }
 
@@ -33,6 +39,10 @@ export default class Settings extends React.Component {
     } catch (error) {
       alert(`Failed to save settings: ${error}`)
     }
+  }
+
+  async logoutPressed() {
+    logout()
   }
 
   render() {
@@ -58,7 +68,25 @@ export default class Settings extends React.Component {
         />
         <Button style={styles.button}
           title="Save"
+          icon={
+            <Icon
+              name="content-save"
+              size={40}
+              color="white"
+            />
+          }
           onPress={() => this.save()}
+        />
+        <Button buttonStyle={{ marginVertical: 1 }}
+          icon={
+            <Icon
+              name="logout"
+              size={40}
+              color="white"
+            />
+          }
+          title="Logout"
+          onPress={() => this.logoutPressed()}
         />
       </View>
     );
