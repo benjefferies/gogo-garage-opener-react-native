@@ -103,7 +103,7 @@ export default class Home extends React.Component {
               color="white"
             />
           }
-          title="Auto close"
+          title="AUTOCLOSE"
           onPress={() => this.autoclosePressed()}
         />
       </ScrollView>

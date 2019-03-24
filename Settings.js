@@ -67,7 +67,7 @@ export default class Settings extends React.Component {
           value={this.state.authClientId}
         />
         <Button style={styles.button}
-          title="Save"
+          title="SAVE"
           icon={
             <Icon
               name="content-save"
@@ -85,7 +85,7 @@ export default class Settings extends React.Component {
               color="white"
             />
           }
-          title="Logout"
+          title="LOGOUT"
           onPress={() => this.logoutPressed()}
         />
       </View>

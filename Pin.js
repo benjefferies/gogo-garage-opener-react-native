@@ -1,10 +1,10 @@
 import React from "react";
-import { Alert, Clipboard, View } from "react-native";
-import { Button } from 'react-native-elements';
+import { Clipboard, ScrollView, Text } from "react-native";
+import { Card, Button } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { oneTimePin } from "./GarageService";
+import { oneTimePin, getOneTimePins, deleteOneTimePin } from "./GarageService";
 import { isLoggedIn } from "./LoginService";
-import { isSettingsConfigured } from "./StorageService";
+import { isSettingsConfigured, getApi } from "./StorageService";
 import styles from './Style';
 
 export default class Pin extends React.Component {
@@ -12,18 +12,17 @@ export default class Pin extends React.Component {
   constructor() {
     super()
     this.state = {
-      doorState: 'Loading',
-      refreshing: false,
+      pins: [],
     }
   }
 
   static navigationOptions = ({ _ }) => {
     return {
       tabBarIcon: (<Icon
-              name="pin"
-              size={25}
-              color="black"
-            />)
+        name="pin"
+        size={25}
+        color="black"
+      />)
     };
   }
 
@@ -37,20 +36,34 @@ export default class Pin extends React.Component {
       navigation.navigate("Login")
       return
     }
+    const pins = await getOneTimePins()
+    this.setState({ pins: pins })
   }
 
   async oneTimePinPressed() {
-    const pin = await oneTimePin()
-    Alert.alert('One time pin', pin,
-      [
-        { text: 'Copy', onPress: () => Clipboard.setString(pin) }
-      ],
-      { cancelable: false }
-    )
+    await oneTimePin()
+    const pins = await getOneTimePins()
+    this.setState({ pins: pins })
   }
+
+  async deletePinPressed(pin) {
+    await deleteOneTimePin(pin)
+    const pins = await getOneTimePins()
+    this.setState({ pins: pins })
+  }
+
+  async copyPinPressed(pin) {
+    const api = await getApi()
+    Clipboard.setString(`${api.rsDomain}/user/one-time-pin/${pin}`)
+  }
+
+  isUsed(usedTime) {
+    return new Date(usedTime).getTime() > 0 ? "Yes" : "No"
+  }
+
   render() {
     return (
-      <View  style={styles.container}>
+      <ScrollView style={styles.container}>
         <Button buttonStyle={{ marginVertical: 1 }}
           icon={
             <Icon
@@ -59,10 +72,38 @@ export default class Pin extends React.Component {
               color="white"
             />
           }
-          title="One time pin"
+          title="NEW PIN"
           onPress={() => this.oneTimePinPressed()}
         />
-      </View>
+        {
+          this.state.pins.map((p, i) => {
+            return (<Card key={i}
+              title={p.pin}>
+              <Text style={{ marginBottom: 10 }}>
+                Created by: {p.createdBy}
+              </Text>
+              <Text style={{ marginBottom: 10 }}>
+                Used: {this.isUsed(p.used)}
+              </Text>
+              <Text style={{ marginBottom: 10 }}>
+                Created: {new Date(p.created).toLocaleString()}
+              </Text>
+              <Button buttonStyle={{ marginVertical: 1 }}
+                onPress={() => this.copyPinPressed(p.pin)}
+                icon={<Icon name='content-copy'
+                  size={25}
+                  color="white" />}
+                title='COPY' />
+              <Button buttonStyle={{ marginVertical: 1 }}
+                onPress={() => this.deletePinPressed(p.pin)}
+                icon={<Icon name='delete'
+                  size={25}
+                  color="white" />}
+                title='DELETE' />
+            </Card>)
+          })
+        }
+      </ScrollView>
     );
   }
 }

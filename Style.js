@@ -5,5 +5,8 @@ export default StyleSheet.create({
     flex: 1,
     height: 100,
     backgroundColor: '#f3f9fb'
+  },
+  pinCard: {
+    
   }
 });

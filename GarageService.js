@@ -41,6 +41,27 @@ export async function oneTimePin() {
   return `${api.rsDomain}/user/one-time-pin/${response.data["pin"]}`
 }
 
+export async function deleteOneTimePin(pin) {
+  let api = await getApi()
+  await axios.delete(`${api.rsDomain}/user/one-time-pin/${pin}`, getOptions(api.accessToken))
+    .catch((error) => {
+      alert(`Failed to delete one time pin: ${error}`)
+      console.log(error)
+      throw error
+    });
+}
+
+export async function getOneTimePins() {
+  let api = await getApi()
+  const response = await axios.get(`${api.rsDomain}/user/one-time-pin`, getOptions(api.accessToken))
+    .catch((error) => {
+      alert(`Failed to get one time pins: ${error}`)
+      console.log(error)
+      throw error
+    });
+  return response.data || []
+}
+
 export async function loginResourceServer() {
   const api = await getApi()
   return axios.post(`${api.rsDomain}/user/login`, {}, getOptions(api.accessToken))
