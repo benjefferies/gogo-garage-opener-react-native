@@ -4691,10 +4691,10 @@ react-lifecycles-compat@^3.0.4:
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
 
-react-native-auth0@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/react-native-auth0/-/react-native-auth0-1.4.0.tgz#7d49b828e24a2fca1792a2f9e3a46a7732280721"
-  integrity sha512-fUSo6rvBiHYNU6walKuXWNON281QJc0xV438NnWi7ae1Ci5ahsSe/DmYZxUl7iHOId9+sofDgE1VNU1uHStmfg==
+react-native-auth0@^1.4.2:
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/react-native-auth0/-/react-native-auth0-1.4.2.tgz#683049fb81f05c63b0a2401c26a30eadc216a34d"
+  integrity sha512-F4OBDkj7JoeJ2ysq+k9boqhMt+9OKXpG9go6ejtVXeAxTrJ5dPhnBHb/ehYwleVr5T6W6c00ooRFYKVZIeRC+Q==
   dependencies:
     base-64 "^0.1.0"
     url "^0.11.0"
