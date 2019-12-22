@@ -1,4 +1,10 @@
 {
   "name": "Garage Opener",
-  "displayName": "Garage Opener"
+  "displayName": "Garage Opener",
+  "expo": {
+    "name": "Garage Opener",
+    "slug": "garage-opener",
+    "sdkVersion": "UNVERSIONED",
+    "privacy": "public"
+  }
 }
