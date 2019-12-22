@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "babel-core": "^7.0.0-bridge.0",
-    "babel-jest": "24.1.0",
+    "babel-jest": "24.9.0",
     "expo": "^36.0.2",
     "jest": "24.9.0",
     "metro-react-native-babel-preset": "0.51.1",
