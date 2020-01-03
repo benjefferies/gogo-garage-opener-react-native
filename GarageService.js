@@ -16,6 +16,33 @@ export async function getState() {
   return response.data['Description']
 }
 
+export async function getGarageSettings() {
+  const api = await getApi()
+  if (!api.rsDomain) {
+    return {}
+  }
+  const response = await axios.get(`${api.rsDomain}/garage/config`, getOptions(api.accessToken))
+    .catch((error) => {
+      alert("Could not get garage config")
+      console.log(error)
+      throw error
+    })
+  return response.data
+}
+
+export async function saveGarageSettings(settings) {
+  const api = await getApi()
+  if (!api.rsDomain) {
+    return {}
+  }
+  await axios.put(`${api.rsDomain}/garage/config`, settings, getOptions(api.accessToken))
+    .catch((error) => {
+      alert("Could not save garage config")
+      console.log(error)
+      throw error
+    })
+}
+
 export async function toggle(autoclose = false) {
   const api = await getApi()
   return axios.post(`${api.rsDomain}/garage/toggle`, {}, {
