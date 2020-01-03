@@ -3,7 +3,7 @@ import { Divider, Text, CheckBox } from 'react-native-elements';
 import DatePicker from 'react-native-datepicker'
 import moment from 'moment'
 import { TextInput, View } from "react-native";
-import { getAllSettings, setSettings } from "./StorageService";
+import { getAllSettings, setSettings, resetAutoClose } from "./StorageService";
 import { Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import styles from './Style';
@@ -184,6 +184,17 @@ export default class Settings extends React.Component {
             />
           }
           onPress={() => this.save()}
+        />
+        <Button buttonStyle={{ marginVertical: 1 }}
+          icon={
+            <Icon
+              name="delete"
+              size={40}
+              color="white"
+            />
+          }
+          title="RESET AUTOCLOSE"
+          onPress={() => resetAutoClose()}
         />
         <Button buttonStyle={{ marginVertical: 1 }}
           icon={

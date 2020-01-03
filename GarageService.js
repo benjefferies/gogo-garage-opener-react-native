@@ -43,11 +43,12 @@ export async function saveGarageSettings(settings) {
     })
 }
 
-export async function toggle(autoclose = false) {
+export async function toggle(autoclose = false, time = 60) {
   const api = await getApi()
   return axios.post(`${api.rsDomain}/garage/toggle`, {}, {
     params: {
-      autoclose: autoclose
+      autoclose: autoclose,
+      time: time
     }, headers: { 'Authorization': `Bearer ${api.accessToken}` }
   })
     .catch((error) => {
