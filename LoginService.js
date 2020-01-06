@@ -36,7 +36,7 @@ export async function login() {
   const auth0 = new Auth0({ domain: settings.asDomain, clientId: settings.clientId });
   try {
     const credentials = await auth0.webAuth
-      .authorize({ scope: 'openid email', audience: `${settings.rsDomain}/api` })
+      .authorize({ scope: 'openid email', audience: `${settings.rsDomain}` })
     await saveAccessToken(credentials.accessToken)
     await loginResourceServer()
   } catch (error) {
