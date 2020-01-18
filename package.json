@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "test": "jest"
+    "test": "jest",
+    "postinstall": "npx jetify"
   },
   "dependencies": {
     "axios": "^0.18.0",
@@ -14,7 +15,7 @@
     "react-native-action-button": "^2.8.5",
     "react-native-datepicker": "^1.7.2",
     "react-native-elements": "^1.1.0",
-    "react-native-gesture-handler": "^1.0.15",
+    "react-native-gesture-handler": "^1.5.3",
     "react-native-vector-icons": "^6.4.1",
     "react-navigation": "^3.2.1"
   },
@@ -22,6 +23,7 @@
     "babel-core": "^7.0.0-bridge.0",
     "babel-jest": "24.1.0",
     "jest": "24.1.0",
+    "jetifier": "^1.6.5",
     "metro-react-native-babel-preset": "0.51.1",
     "react-native-auth0": "^1.4.0",
     "react-test-renderer": "16.6.3"

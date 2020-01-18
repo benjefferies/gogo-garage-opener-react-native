@@ -5,13 +5,17 @@ import Home from "./Home";
 import Settings from "./Settings";
 import axios from "axios";
 import NavigationService from "./NavigationService";
-import { login } from "./LoginService"
+import { login, isLoggedInOrRefresh } from "./LoginService"
 import Pin from "./Pin";
 
 axios.interceptors.response.use(response => {
   return response;
 }, async error => {
   if (error.response && error.response.status === 401) {
+    isRefreshed = await isLoggedInOrRefresh()
+    if (isRefreshed) {
+      return Promise.reject(error);
+    }
     await login()
   } else {
     return Promise.reject(error);

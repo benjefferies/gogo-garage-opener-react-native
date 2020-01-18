@@ -3,7 +3,7 @@ import { Clipboard, ScrollView, Text } from "react-native";
 import { Card, Button } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { oneTimePin, getOneTimePins, deleteOneTimePin } from "./GarageService";
-import { isLoggedIn } from "./LoginService";
+import { isLoggedInOrRefresh } from "./LoginService";
 import { isSettingsConfigured, getApi } from "./StorageService";
 import styles from './Style';
 
@@ -32,7 +32,7 @@ export default class Pin extends React.Component {
       navigation.navigate("Settings")
       return
     }
-    if (!await isLoggedIn()) {
+    if (!await isLoggedInOrRefresh()) {
       navigation.navigate("Login")
       return
     }

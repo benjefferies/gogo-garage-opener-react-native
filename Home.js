@@ -3,7 +3,7 @@ import { RefreshControl, ScrollView, View, Text } from "react-native";
 import { Button, Overlay } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { getState, toggle } from "./GarageService";
-import { isLoggedIn, login } from "./LoginService";
+import { isLoggedInOrRefresh, login } from "./LoginService";
 import { isSettingsConfigured, addAutocloseTimes, getAutoCloseTimes } from "./StorageService";
 import ActionButton from 'react-native-action-button';
 import { TextInput } from "react-native-gesture-handler";
@@ -37,7 +37,7 @@ export default class Home extends React.Component {
       navigation.navigate("Settings")
       return
     }
-    if (!await isLoggedIn()) {
+    if (!await isLoggedInOrRefresh()) {
       await login()
       return
     }

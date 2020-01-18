@@ -51,15 +51,18 @@ export async function isSettingsConfigured() {
 
 export async function getApi() {
   let accessToken = await AsyncStorage.getItem('accessToken')
+  let refreshToken = await AsyncStorage.getItem('refreshToken')
   let domain = await AsyncStorage.getItem('domain') // 'https://open.mygaragedoor.space
   return {
     accessToken: accessToken,
-    rsDomain: domain
+    rsDomain: domain,
+    refreshToken: refreshToken
   }
 }
 
-export async function saveAccessToken(accessToken) {
+export async function saveAccessToken(accessToken, refreshToken) {
   await AsyncStorage.setItem('accessToken', accessToken)
+  await AsyncStorage.setItem('refreshToken', refreshToken)
 }
 
 export async function removeAccessToken() {
