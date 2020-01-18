@@ -1,6 +1,7 @@
 import React from "react";
 import { BackHandler } from "react-native"
-import { createBottomTabNavigator, createAppContainer } from "react-navigation";
+import { createAppContainer } from 'react-navigation';
+import { createBottomTabNavigator } from 'react-navigation-tabs';
 import Home from "./Home";
 import Settings from "./Settings";
 import axios from "axios";

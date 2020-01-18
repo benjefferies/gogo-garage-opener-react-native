@@ -101,7 +101,7 @@ android {
         applicationId "uk.echosoft.garage.opener"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 26
+        versionCode 27
         versionName "2.0.1"
     }
     signingConfigs {
@@ -145,6 +145,7 @@ android {
 }
 
 dependencies {
+    implementation project(':react-native-reanimated')
     implementation project(':react-native-vector-icons')
     implementation project(':react-native-auth0')
     implementation project(':react-native-gesture-handler')
