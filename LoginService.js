@@ -44,7 +44,7 @@ export async function isLoggedInOrRefresh() {
     });
     console.log(`Got new access token ${newAccessToken.accessToken}`)
     saveAccessToken(newAccessToken.accessToken, api.refreshToken);
-    return await isLoggedIn(auth0, api.accessToken);
+    return await isLoggedIn(auth0, newAccessToken.accessToken);
   } catch (error) {
     console.log("Could not get access token from refresh token " + error);
     return false;
